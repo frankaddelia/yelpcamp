@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 3001;
+const port = 3000;
 const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
@@ -50,6 +50,7 @@ app.get('/campgrounds/new', (req, res) => {
 app.get('/campgrounds/:id', async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
+    console.log(campground);
     res.render('campgrounds/show', { campground });
 });
 
