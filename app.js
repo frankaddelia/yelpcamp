@@ -14,6 +14,7 @@ const { campgroundSchema, reviewSchema } = require('./schemas.js');
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
     useNewUrlParser: true,
     useCreateIndex: true,
+    useFindAndModify: false,
     useUnifiedTopology: true,
 });
 
@@ -90,8 +91,8 @@ app.put('/campgrounds/:id', validateCampground, catchAsync(async(req, res) => {
 
 app.delete('/campgrounds/:id', catchAsync(async(req, res) => {
     const { id } = req.params;
-    const campground = await Campground.findByIdAndDelete(id);
-    res.redirect(`/campgrounds/`);
+    await Campground.findByIdAndDelete(id);
+    res.redirect(`/campgrounds`);
 }));
 
 app.post('/campgrounds/:id/reviews', validateReview, catchAsync(async (req, res) => {
@@ -104,7 +105,10 @@ app.post('/campgrounds/:id/reviews', validateReview, catchAsync(async (req, res)
 }));
 
 app.delete('/campgrounds/:id/reviews/:reviewId', catchAsync(async (req, res) => {
-    res.send('DELETETING!');
+    const { id, reviewId } = req.params;
+    await Campground.findByIdAndUpdate(id, { $pull: {reviews: reviewId} });
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/campgrounds/${id}`);
 }));
 
 app.all('*', (req, res, next) => {
