@@ -30,10 +30,6 @@ router.get('/:id', catchAsync(async (req, res) => {
         }
     }).populate('author');
 
-    for (let review of campground.reviews) {
-        console.log(review);
-    }
-
     if (!campground) {
         req.flash('error', 'Campground not found!');
         return res.redirect('/campgrounds');
