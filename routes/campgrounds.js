@@ -3,8 +3,8 @@ const router = express.Router();
 const catchAsync = require('../utils/catchAsync');
 const ExpressError = require('../utils/ExpressError');
 const Campground = require('../models/campground');
-
 const { campgroundSchema } = require('../schemas.js');
+const { isLoggedIn } = require('../middleware');
 
 const validateCampground = (req, res, next) => {
     const { error } = campgroundSchema.validate(req.body);
@@ -28,11 +28,7 @@ router.post('/', validateCampground, catchAsync(async (req, res, next) => {
     res.redirect(`/campgrounds/${campground._id}`);
 }));
 
-router.get('/new', (req, res) => {
-    if (!req.isAuthenticated()) {
-        req.flash('error', 'You must be signed in!');
-        return res.redirect('/login');
-    } 
+router.get('/new', isLoggedIn, (req, res) => {
     res.render('campgrounds/new')
 });
 
