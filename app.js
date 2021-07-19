@@ -15,6 +15,7 @@ const ExpressError = require('./utils/ExpressError');
 const passport = require('passport');
 const LocalStratagy = require('passport-local');
 const User = require('./models/user');
+const mongoSanitize = require('express-mongo-sanitize');
 
 const userRoutes = require('./routes/users');
 const campgroundRoutes = require('./routes/campgrounds');
@@ -40,6 +41,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(mongoSanitize());
 
 const sessionConfig = {
     secret: 'thisshouldbeabettersecret',
@@ -65,6 +67,7 @@ app.use((req, res, next) => {
     if (!['/login', '/'].includes(req.originalUrl)) {
         req.session.returnTo = req.originalUrl;
     }
+    console.log(req.query);
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
